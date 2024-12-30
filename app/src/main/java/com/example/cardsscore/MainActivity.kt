@@ -20,13 +20,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.cardsscore.data.PlayerInfo
 import com.example.cardsscore.ui.theme.CardsScoreTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import com.example.cardsscore.data.PlayerInfo
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,71 +48,57 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-
+var playerInfo = PlayerInfo()
 
 @Composable
 fun AppLayout(modifier: Modifier = Modifier) {
-    //var playerInfo = PlayerInfo()
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        InputField()
-    }
-}
-
-@Composable
-fun InputField() {
-    var isChecked by remember { mutableStateOf(false) }
-    var text by remember { mutableStateOf("") }
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        // Your other content here...
-
-        // Toggle with text input in a popup
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text("Enable Feature:")
-            Spacer(modifier = Modifier.width(8.dp))
-            Switch(
-                checked = isChecked,
-                onCheckedChange = { isChecked = it },
-            )
-
-            // Show text input popup if toggle is checked
-            if (isChecked) {
-                var showPopup by remember { mutableStateOf(true) } // Initially show
-                if (showPopup) {
-                    AlertDialog(
-                        onDismissRequest = { showPopup = false },
-                        title = { Text("Enter Text") },
-                        text = {
-                            TextField(
-                                value = text,
-                                onValueChange = { text = it },
-                                singleLine = true
-                            )
-                        },
-                        confirmButton = {
-                            Button(onClick = { showPopup = false }) {
-                                Text("OK")
-                            }
-                        },
-                        properties = DialogProperties(dismissOnBackPress = true) // Allow focus
-                    )
-                }
-            }
-        }
+        AddPlayer()
     }
 }
 
 @Composable
 fun AddPlayer() {
-
+    var isChecked by remember { mutableStateOf(false) }
+    var text by remember { mutableStateOf("") }
+    fun completion(){
+        isChecked = false
+        playerInfo.addPlayer(text)
+        text = ""
+    }
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Button(onClick = { isChecked = !isChecked }) {
+            Text("Add Player")
+        }
+        // Show text input popup if toggle is checked
+        if (isChecked) {
+            AlertDialog(
+                onDismissRequest = { isChecked = false },
+                title = { Text("Enter Player Name") },
+                text = {
+                    TextField(
+                        value = text,
+                        onValueChange = { text = it },
+                        singleLine = true
+                    )
+                },
+                confirmButton = {
+                    Button(onClick = { completion() }) {
+                        Text("OK")
+                    }
+                },
+                properties = DialogProperties(dismissOnBackPress = true) // Allow focus
+            )
+        }
+    }
 }
+
+
 
 @Composable
 fun NameBox(
